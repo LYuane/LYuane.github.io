@@ -62,8 +62,8 @@ kramdown:
 # Gitalk
 gitalk:
   enable: true    #是否开启Gitalk评论
-  clientID: 857bfd267eecfe889d75                            #生成的clientID
-  clientSecret: e6747e3e9b3bbfd01b9d024a6894428d32779bcd    #生成的clientSecret
+  clientID: 8029ce6fa65d7e08190c                            #生成的clientID
+  clientSecret: 9f6aa01db3d43ec92a5aa91a041662e09059124d    #生成的clientSecret
   repo: LYuane.github.io    #仓库名称
   owner: LYuane    #github用户名
   admin: LYuane
@@ -86,7 +86,7 @@ gitalk:
 
 # Featured Tags
 featured-tags: true                     # 是否使用首页标签
-featured-condition-size: 1              # 相同标签数量大于这个数，才会出现在首页
+featured-condition-size: 0              # 相同标签数量大于这个数，才会出现在首页
 
 
 
