@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      google hacker
-subtitle:   google牛13不解释
+subtitle:
 date:       2017-10-07
 author:     Yuane
 header-img: img/post.jpg
@@ -9,7 +9,6 @@ catalog: true
 tags:
     - CTF
     - web安全
-    - google hacker
 ---
 
 
