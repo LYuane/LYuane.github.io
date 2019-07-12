@@ -4,14 +4,14 @@ SEOTitle: Yuane's Blog
 header-img: img/home-bg.jpg
 email: tongyz@bupt.edu.cn
 description: "Every failure is leading towards success."
-keyword: "Yuane, Yuane的博客, Yuane, iOS, Apple, iPhone"
+keyword: "Yuane, Yuane的博客, Yuane, web, CTF"
 url: "http://LYuane.github.io"          # your host, for absolute URL
 baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
 #github_repo: "https://github.com/qiubaiying/qiubaiying.github.io.git" # you code repository
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "Goals determine what you going to be!"
+sidebar-about-description: "Stay hungry. Stay foolish."
 sidebar-avatar: /img/sidebar-yuane.jpg     # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
