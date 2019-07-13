@@ -13,7 +13,7 @@ tags:
 
 
 
-# 0x01高级操作符
+### 0x01高级操作符
 
 intext:把网页中的正文内容中的某个字符做为搜索条件
 
@@ -60,7 +60,7 @@ related：搜索所有链接到指定链接的相关URL
 
 
 
-# 0x02相关链接
+### 0x02相关链接
 
 [Google Hack技巧——不用暴力也可以取得密码]: https://blog.csdn.net/Jeanphorn/article/details/44907737	"Google Hack技巧——不用暴力也可以取得密码"
 [Google Hacking————你真的会用Google吗？]: https://zhuanlan.zhihu.com/p/22161675	"Google Hacking————你真的会用Google吗？"
