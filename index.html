@@ -131,7 +131,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -175,7 +175,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://lyuane.github.io/2022/01/09/test2/">
+    <link itemprop="mainEntityOfPage" href="http://lyuane.github.io/2022/01/10/github-pages%E7%BB%91%E5%AE%9A%E5%9F%9F%E5%90%8D%E8%BF%87%E6%9C%9F%EF%BC%8C%E4%BD%86%E6%98%AF%E8%A7%A3%E6%9E%90%E8%BF%98%E5%9C%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpeg">
@@ -188,7 +188,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/01/09/test2/" class="post-title-link" itemprop="url">test2</a>
+          <a href="/2022/01/10/github-pages%E7%BB%91%E5%AE%9A%E5%9F%9F%E5%90%8D%E8%BF%87%E6%9C%9F%EF%BC%8C%E4%BD%86%E6%98%AF%E8%A7%A3%E6%9E%90%E8%BF%98%E5%9C%A8/" class="post-title-link" itemprop="url">github pages绑定域名过期，但是解析还在</a>
         </h2>
 
         <div class="post-meta-container">
@@ -199,7 +199,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2022-01-09 19:50:06" itemprop="dateCreated datePublished" datetime="2022-01-09T19:50:06+08:00">2022-01-09</time>
+      <time title="创建时间：2022-01-10 14:34:46" itemprop="dateCreated datePublished" datetime="2022-01-10T14:34:46+08:00">2022-01-10</time>
     </span>
 
   
@@ -212,70 +212,16 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://lyuane.github.io/2021/11/19/test/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="沄渊">
-      <meta itemprop="description" content="路漫漫其修远兮,吾将上下而求索">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="沄渊">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/11/19/test/" class="post-title-link" itemprop="url">test</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-11-19 17:14:54" itemprop="dateCreated datePublished" datetime="2021-11-19T17:14:54+08:00">2021-11-19</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>it it a test</p>
+          <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>之前github.io的博客绑定了阿里云的域名，但是域名现在过期。</p>
+<p>通过username.github.io 访问还是会跳到绑定的域名</p>
+<h1 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h1><p>绑定域名时在github创建CNAME后会对域名进行缓存，导致每次解析重定向到绑定的域名</p>
+<p>ps：想想在配置的时候不仅要在域名平台进行配置，还要在github配置CNAME，双向认证。</p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><ul>
+<li>清空CNAME，再提交一次（本质是通过改变CNAME来更新github的缓存）</li>
+<li>如果是删除了项目，可以新建同名项目并提交空CNAME文件</li>
+</ul>
+<h1 id="Ref"><a href="#Ref" class="headerlink" title="Ref"></a>Ref</h1><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/CNAME%E8%AE%B0%E5%BD%95">https://zh.wikipedia.org/wiki/CNAME%E8%AE%B0%E5%BD%95</a></p>
+<p><a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/205660.html">https://help.aliyun.com/document_detail/205660.html</a></p>
 
       
     </div>
