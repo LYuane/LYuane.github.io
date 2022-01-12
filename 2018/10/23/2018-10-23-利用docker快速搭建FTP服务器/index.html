@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lyuane.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="0x00docker压缩包已上传至github 0x01 导入镜像1cat ftp.rar | docker import - ftp:tyz      &#x2F;&#x2F;[REPOSITORY]:[tag]    0x02 启动容器123456789docker run -dt --name ftp -e &quot;PUBLICHOST&#x3D;localhost&quot; --privileged&#x3D;true -">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用docker快速搭建FTP服务器">
+<meta property="og:url" content="http://lyuane.github.io/2018/10/23/2018-10-23-%E5%88%A9%E7%94%A8docker%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BAFTP%E6%9C%8D%E5%8A%A1%E5%99%A8/index.html">
+<meta property="og:site_name" content="沄渊">
+<meta property="og:description" content="0x00docker压缩包已上传至github 0x01 导入镜像1cat ftp.rar | docker import - ftp:tyz      &#x2F;&#x2F;[REPOSITORY]:[tag]    0x02 启动容器123456789docker run -dt --name ftp -e &quot;PUBLICHOST&#x3D;localhost&quot; --privileged&#x3D;true -">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-10-22T16:00:00.000Z">
+<meta property="article:author" content="沄渊">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lyuane.github.io/2018/10/23/2018-10-23-%E5%88%A9%E7%94%A8docker%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BAFTP%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lyuane.github.io/2018/10/23/2018-10-23-%E5%88%A9%E7%94%A8docker%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BAFTP%E6%9C%8D%E5%8A%A1%E5%99%A8/","path":"2018/10/23/2018-10-23-利用docker快速搭建FTP服务器/","title":"利用docker快速搭建FTP服务器"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>利用docker快速搭建FTP服务器 | 沄渊</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">沄渊</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">守得云开见月明</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x00"><span class="nav-number">1.</span> <span class="nav-text">0x00</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x01-%E5%AF%BC%E5%85%A5%E9%95%9C%E5%83%8F"><span class="nav-number">2.</span> <span class="nav-text">0x01 导入镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x02-%E5%90%AF%E5%8A%A8%E5%AE%B9%E5%99%A8"><span class="nav-number">3.</span> <span class="nav-text">0x02 启动容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x03-%E8%BF%90%E8%A1%8CFTP"><span class="nav-number">4.</span> <span class="nav-text">0x03 运行FTP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x04-%E6%B5%8B%E8%AF%95"><span class="nav-number">5.</span> <span class="nav-text">0x04 测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x05-%E4%BB%8Edockerhub%E6%8B%89%E5%8F%96"><span class="nav-number">6.</span> <span class="nav-text">0x05 从dockerhub拉取</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="沄渊"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">沄渊</p>
+  <div class="site-description" itemprop="description">路漫漫其修远兮,吾将上下而求索</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lyuane.github.io/2018/10/23/2018-10-23-%E5%88%A9%E7%94%A8docker%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BAFTP%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="沄渊">
+      <meta itemprop="description" content="路漫漫其修远兮,吾将上下而求索">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="沄渊">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          利用docker快速搭建FTP服务器
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-10-23 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-23T00:00:00+08:00">2018-10-23</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="0x00"><a href="#0x00" class="headerlink" title="0x00"></a>0x00</h3><p>docker压缩包已上传至github</p>
+<h3 id="0x01-导入镜像"><a href="#0x01-导入镜像" class="headerlink" title="0x01 导入镜像"></a>0x01 导入镜像</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat ftp.rar | docker import - ftp:tyz      //[REPOSITORY]:[tag]</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="0x02-启动容器"><a href="#0x02-启动容器" class="headerlink" title="0x02 启动容器"></a>0x02 启动容器</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker run -dt --name ftp -e &quot;PUBLICHOST=localhost&quot; --privileged=true -v /home/ftpusers/robin:/home/ftpusers/www ftp:tyz bash</span><br><span class="line"></span><br><span class="line">说明：</span><br><span class="line"></span><br><span class="line">　　使用绑定IP为192.168.0.3，如果是公开FTP的话，可以不写IP。</span><br><span class="line"></span><br><span class="line">　　FTP用户计算方式为“(最大端口号-最小端口号) / 2”。我这里修改为可以满足100个用户同时连接登陆</span><br><span class="line"></span><br><span class="line">　　做了个目录映射，把本机的/home/ftpusers/robin目录映射到pure-ftp的/home/ftpusers/www下</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x03-运行FTP"><a href="#0x03-运行FTP" class="headerlink" title="0x03 运行FTP"></a>0x03 运行FTP</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1.进入docker容器</span><br><span class="line">docker exec -it ftp bin/bash</span><br><span class="line"></span><br><span class="line">2.在容器内执行命令</span><br><span class="line">/usr/sbin/pure-ftpd -c 100 -C 100 -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R -P $PUBLICHOST -p 30000:30209 &amp;</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x04-测试"><a href="#0x04-测试" class="headerlink" title="0x04 测试"></a>0x04 测试</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ftp -p [IP] [port]</span><br><span class="line">如果没变的话应该是   ftp -p 192.168.0.3 21</span><br><span class="line"></span><br><span class="line">预设两个用户名/密码     www/www     test/test</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x05-从dockerhub拉取"><a href="#0x05-从dockerhub拉取" class="headerlink" title="0x05 从dockerhub拉取"></a>0x05 从dockerhub拉取</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker pull stilliard/pure-ftpd:hardened</span><br><span class="line"></span><br><span class="line">docker run -d --name ftp1 -p 2121:21 -p 30000-30009:30000-30009 -e FTP_USER_NAME=test -e FTP_USER_PASS=test -e FTP_USER_HOME=/home/test stilliard/pure-ftpd:hardened</span><br></pre></td></tr></table></figure>
+
+
+
+<p>测试</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ftp -p ip 21</span><br><span class="line"></span><br><span class="line">用户/密码   test/test</span><br><span class="line"></span><br><span class="line">上传文件   put [本地路径]  [上传路径]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>实现匿名访问</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it [content-id] bash</span><br><span class="line"></span><br><span class="line">$ cd /etc/pure-ftpd/conf</span><br><span class="line">$ vi NoAnonymous</span><br><span class="line">改为no</span><br><span class="line"></span><br><span class="line">$ service vsftpd restart</span><br></pre></td></tr></table></figure>
+
+
+
+<p>如果出现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash: vi: command not found</span><br></pre></td></tr></table></figure>
+
+<p>解决办法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">apt-get update</span><br><span class="line">apt-get install vim</span><br><span class="line">vim NoAnonymous</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/docker/" rel="tag"># docker</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/10/14/2018-10-14-k8s%E6%A6%82%E5%BF%B5/" rel="prev" title="k8s概念">
+                  <i class="fa fa-chevron-left"></i> k8s概念
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/11/09/2018-11-09-NoSQL%E6%B3%A8%E5%85%A5/" rel="next" title="NoSQL注入">
+                  NoSQL注入 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沄渊</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

